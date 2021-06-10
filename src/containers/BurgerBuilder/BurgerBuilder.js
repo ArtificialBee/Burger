@@ -16,12 +16,12 @@ class BurgerBuilder extends Component {
 
     state = {
         ingredients: {
-            salad: 1,
-            bacon: 1,
-            cheese: 2,
-            meat: 2
+            salad: 0,
+            bacon: 0,
+            cheese: 0,
+            meat: 0
         },
-        totalPrice: 4,
+        totalPrice: 0,
         purchaseable: false,
         purchasing: false
     }
@@ -33,24 +33,29 @@ class BurgerBuilder extends Component {
         }).reduce((sum, el) => {
             return sum + el;
         }, 0)
+        console.log("SUMA ELEMENATA: ", sum > 0);
         this.setState({ purchaseable: sum > 0 })
     }
 
     addIngerdientHandler = (type) => {
         const oldCount = this.state.ingredients[type];
+        const oldPrice = this.state.totalPrice;
         const updateCount = oldCount + 1;
         const updateIngredient = {
             ...this.state.ingredients
         }
         updateIngredient[type] = updateCount; //Updateovanje novog objekta koji sluzi za kopiranje
-        const additionPrices = INGREDIENT_PRICES[type] + this.totalPrice;
-        this.setState({ ingredients: updateIngredient, totalPrice: additionPrices })
+        const additionPrices = INGREDIENT_PRICES[type];
+        let newPrice = oldPrice + additionPrices;
+        newPrice = Math.round(newPrice * 100) / 100;
+        this.setState({ ingredients: updateIngredient, totalPrice: newPrice })
         this.updatePurchaseState(updateIngredient);
 
     }
 
     removeIngerdientHandler = (type) => {
         const oldCount = this.state.ingredients[type];
+        const oldPrice = this.state.totalPrice;
         if (oldCount <= 0) {
             return;
         }
@@ -59,8 +64,10 @@ class BurgerBuilder extends Component {
             ...this.state.ingredients
         }
         updateIngredient[type] = updateCount; //Updateovanje novog objekta koji sluzi za kopiranje
-        const deductionPrices = INGREDIENT_PRICES[type] - this.totalPrice;
-        this.setState({ ingredients: updateIngredient, totalPrice: deductionPrices })
+        const deductionPrices = INGREDIENT_PRICES[type];
+        let newPrice = oldPrice - deductionPrices;
+        newPrice = Math.round(newPrice * 100) / 100;
+        this.setState({ ingredients: updateIngredient, totalPrice: newPrice })
         this.updatePurchaseState(updateIngredient)
     }
 
@@ -89,7 +96,8 @@ class BurgerBuilder extends Component {
                     modalClosed={this.purchaseCloseHandler}>
                     <OrderSummary ingredients={this.state.ingredients}
                         close={this.purchaseCloseHandler}
-                        continue={this.purchaseContinue} />
+                        continue={this.purchaseContinue}
+                        price={this.state.totalPrice} />
                 </Modal>
                 <Burger ingredients={this.state.ingredients} />
                 <BuildControls
@@ -97,7 +105,8 @@ class BurgerBuilder extends Component {
                     ingredientsRemoved={this.removeIngerdientHandler}
                     disabled={disabledInfo}
                     purchaseable={this.state.purchaseable}
-                    orderd={this.purchaseHandler} />
+                    orderd={this.purchaseHandler}
+                    price={this.state.totalPrice} />
             </Aux>
         );
     }
