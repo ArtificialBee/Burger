@@ -1,15 +1,16 @@
 import React from 'react';
 import Logo from '../../Logo/Logo'
 import NavigationItems from '../NavigationItems/NavigationItems'
+import DrawerToggle from '../SideDrawer/DrawerToggle/DrawerToggle'
 import './Toolbar.css'
 
 
 const Toolbar = (props) => {
     return (
         <header className="Toolbar">
-            <div>MENU</div>
+            <DrawerToggle clicked={props.drawToggler} />
             <Logo />
-            <nav>
+            <nav className="DesktopOnly">
                 <NavigationItems />
             </nav>
         </header>
